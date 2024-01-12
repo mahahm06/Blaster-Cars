@@ -5,9 +5,12 @@ pygame.init()
 
 #colours:
 #RGB = Red,Green,
-red = (250,0,0)
-yellow = (210,200,0)
-green = (0,160,0)
+red = (255,0,0)
+yellow = (200,200,0)
+green = (0,155,0)
+lightGreen = (0,225,0)
+lightYellow = (250,250,0)
+darkRed = (200,0,0)
 white = (255,255,255)
 black = (0,0,0)
 
@@ -22,25 +25,26 @@ pygame.display.set_caption('Blaster cars')
 background_image = pygame.image.load('pitch3.jpg')
 
 pygame.display.update()
+
 clock = pygame.time.Clock()
 
 size = 30
 FPS = 60
 
 # features
-car1 = screen_width * 0.5
-car2 = screen_height * 0.5
+car1 = screen_width * 0.1
+car2 = screen_height * 0.1
 
-font1 = pygame.font.SysFont("blastercars", 25)
+font1 = pygame.font.SysFont("Blaster Cars", 25)
 font2 = pygame.font.SysFont("Blaster Cars", 50)
 font3 = pygame.font.SysFont("Blaster Cars", 80)
-   
+
 
 def controls():
    
-    count = True
+    cont = True
 
-    while count:
+    while cont:
        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -54,7 +58,6 @@ def controls():
                    pygame.quit()
                    quit()
                
-#options display
         screenDisplay.blit(background_image, (0,0))
         message("Controls", black, -100, size = "medium")
         message("jump button - W and UP", black, -30)
@@ -62,24 +65,24 @@ def controls():
         message("press P to play or Q to quit",black,100)
        
         #button functions
-        pygame.draw.rect(screenDisplay,green,(100,500,100,50))
+        pygame.draw.rect(screenDisplay,green,(150,500,100,50))
         pygame.draw.rect(screenDisplay,red,(550,500,100,50))
        
-        button("PLAY" ,150,500,100,50, black, black, act="play")
-        button("QUIT" ,550,500,100,50, black, black, act="quit")
+        button("PLAY" ,150,500,100,50, green, lightGreen, act="play")
+        button("QUIT" ,550,500,100,50, red, darkRed, act="quit")
            
         pygame.display.update()
         clock.tick(15)
 
-def tank(x,y):
+def car(x,y):
     pygame.draw.circle(screenDisplay, green, (int(x), int(y)),20)
    
-def button(text, x, y, WIDTH, HEIGHT, inColour, aColour, act = None):
+def button(text, x, y, screen_width, screen_height, inColour, aColour, act = None):
     pos = pygame.mouse.get_pos()
     mouseinp = pygame.mouse.get_pressed()
     #print(mouseinp)
-    if x + WIDTH > pos[0] > x and y + HEIGHT > pos[1] >y:
-        pygame.draw.rect(screenDisplay, aColour, (x,y,WIDTH,HEIGHT))
+    if x + screen_width > pos[0] > x and y + screen_height > pos[1] >y:
+        pygame.draw.rect(screenDisplay, aColour, (x,y,screen_width,screen_height))
        
         if mouseinp[0] == 1 and act != None:
             if act == "quit":
@@ -92,7 +95,7 @@ def button(text, x, y, WIDTH, HEIGHT, inColour, aColour, act = None):
                 gameLoop()
    
     else:
-        pygame.draw.rect(screenDisplay, inColour, (x,y,WIDTH,HEIGHT))
+        pygame.draw.rect(screenDisplay, inColour, (x,y,screen_width, screen_height))
    
     buttonTxt(text,black,x,y,screen_width,screen_height)
 
@@ -124,13 +127,9 @@ def startUP():
         message("press P to play, O to open options menu or Q to quit",black,180,"small")
        
         #button functions
-        pygame.draw.rect(screenDisplay,green,(850,500,175,150))
-        pygame.draw.rect(screenDisplay,yellow,(350,500,100,50))
-        pygame.draw.rect(screenDisplay,red,(550,500,100,50))
-       
         button("PLAY" ,850,500,175,150, green, green, act="play",)
-        button("OPTIONS",350,500,100,50, yellow, yellow, act="options")
-        button("QUIT" ,550,500,100,50, red, red, act="quit")
+        button("OPTIONS",350,500,160,110, yellow, yellow, act="options")
+        button("QUIT" ,550,500,160,110, red, red, act="quit")
            
         pygame.display.update()
         clock.tick(15)
@@ -156,27 +155,25 @@ def options_menu():
  #options menu display
         screenDisplay.blit(bg, (0,0)).convert_alpha()
         message("Controls", black, -100, size = "medium")
-        message("Moving the turet: UP and Down Keys", black, -100, size = "medium")
-        message("Moving the tank: Left and Right Keys", black, -100, size = "medium")
-        message("Fire: Spacebar", black, -100, size = "medium")
-        message("Press P to play on or Q to quit game", black, 25)
+        message("jump button - W and UP", black, -30)
+        message("Left and right keys and A and D", black, 10)
+        message("press P to play or Q to quit",black,100)
+       
        
    
-def textOb(text, color, size):
-    available_fonts = {
-        "small": font1,
-        "medium": font2,
-        "large": font3
-    }
-
-    if size in available_fonts:
-        surfTxt = available_fonts[size].render(text, True, color)
-    else:
-        # Handle unsupported size, for example, fallback to a default font or raise an error.
-        surfTxt = default_font.render(text, True, color)
-    
+def textOb(text,color,size):
+    if size == "small":
+        surfTxt = font1.render(text,True,color)
+    elif size == "medium":
+        surfTxt = font2.render(text,True,color)
+    elif size == "large":
+        surfTxt = font3.render(text,True,color)
     return surfTxt, surfTxt.get_rect()
 
+def buttonTxt(msg, color, BX, BY, BW, BH, size = "medium"):
+    surfTxt, rectTxt = textOb(msg, color, size)
+    rectTxt.center = ((BX+(BW/2)), BY+(BH/2))
+    screenDisplay.blit(surfTxt,rectTxt)
    
 def message(msg,color, disY = 0, size = "small"):
     surfTxt, rectTxt = textOb(msg, color, size)
@@ -228,7 +225,7 @@ def gameLoop():
            
            
             screenDisplay.fill(white)
-            tank(car1, car2)
+            car(car1, car2)
             pygame.display.update()
            
             #updates FPS if needed
